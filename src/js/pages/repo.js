@@ -6,7 +6,7 @@ function renderHeader(username) {
   return `
     <header class="site-header">
       <div class="logo" id="header-logo">
-        <i class="bi bi-github"></i> GitHub Explorer
+        <i class="bi bi-github"></i> Github Finder
       </div>
       <div class="header-search">
         <i class="bi bi-search"></i>
@@ -103,15 +103,15 @@ export async function renderRepoPage({ params }) {
         <div class="repo-detail-stats">
           <div class="detail-stat">
             <span class="stat-label">Estrelas</span>
-            <span class="stat-val orange">⭐ ${fmtNumber(repo.stargazers_count)}</span>
+            <span class="stat-val orange">${fmtNumber(repo.stargazers_count)}</span>
           </div>
           <div class="detail-stat">
             <span class="stat-label">Forks</span>
-            <span class="stat-val blue">🍴 ${fmtNumber(repo.forks_count)}</span>
+            <span class="stat-val blue">${fmtNumber(repo.forks_count)}</span>
           </div>
           <div class="detail-stat">
             <span class="stat-label">Watchers</span>
-            <span class="stat-val green">👁 ${fmtNumber(repo.watchers_count)}</span>
+            <span class="stat-val green">${fmtNumber(repo.watchers_count)}</span>
           </div>
           <div class="detail-stat">
             <span class="stat-label">Issues abertas</span>
@@ -124,7 +124,6 @@ export async function renderRepoPage({ params }) {
             repo.language
               ? `
             <span class="meta-item">
-              <span class="lang-dot" style="background:${color}"></span>
               <strong>${escHtml(repo.language)}</strong>
             </span>`
               : ""

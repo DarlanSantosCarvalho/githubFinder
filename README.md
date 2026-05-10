@@ -1,4 +1,4 @@
-# GitHub Explorer
+# Github Finder
 
 Aplicação client-side que consome a API pública do GitHub para buscar e exibir perfis de usuários, seus repositórios e detalhes de cada repositório.
 

@@ -4,7 +4,7 @@ export function renderHome() {
   document.getElementById("view").innerHTML = `
     <div class="home-hero">
       <div class="hero-icon"><i class="bi bi-github"></i></div>
-      <h1 class="hero-title">GitHub Explorer</h1>
+      <h1 class="hero-title">Github Finder</h1>
       <p class="hero-subtitle">Explore perfis, repositórios e estatísticas de qualquer usuário do GitHub.</p>
 
       <div class="hero-search" id="hero-search-wrap">
@@ -12,19 +12,17 @@ export function renderHome() {
         <input
           type="text"
           id="hero-input"
-          placeholder="ex: torvalds, gaearon, sindresorhus…"
+          placeholder="ex: DarlanSantosCarvalho"
           autocomplete="off"
           autocapitalize="off"
           spellcheck="false"
         />
-        <button id="hero-btn">Explorar</button>
+        <button id="hero-btn">Procurar</button>
       </div>
 
       <p class="hero-hint">
         Tente
-        <span data-user="torvalds">torvalds</span>,
-        <span data-user="gaearon">gaearon</span> ou
-        <span data-user="sindresorhus">sindresorhus</span>
+        <span data-user="DarlanSantosCarvalho">DarlanSantosCarvalho</span>
       </p>
     </div>
   `;

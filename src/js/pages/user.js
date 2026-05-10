@@ -2,9 +2,12 @@ import { getUser, getUserRepos } from "../api.js";
 import { navigate } from "../router.js";
 import { fmtNumber, escHtml } from "../utils.js";
 
+const PAGE_SIZE = 6;
+
 let currentRepos = [];
 let currentSort = "stars";
 let currentUser = "";
+let visibleCount = PAGE_SIZE;
 
 const sortFns = {
   stars: (a, b) => b.stargazers_count - a.stargazers_count,
@@ -37,14 +40,7 @@ function repoCardHTML(repo, index) {
       <div class="repo-footer">
         <span class="repo-stat stars"><i class="bi bi-star-fill"></i>${fmtNumber(repo.stargazers_count)}</span>
         <span class="repo-stat forks"><i class="bi bi-diagram-2"></i>${fmtNumber(repo.forks_count)}</span>
-        ${
-          repo.language
-            ? `<span class="repo-lang">
-               <span class="lang-dot" style="background:${color}"></span>
-               ${escHtml(repo.language)}
-             </span>`
-            : ""
-        }
+        ${repo.language ? `<span class="repo-lang">${escHtml(repo.language)}</span>` : ""}
       </div>
     </div>`;
 }
@@ -52,6 +48,7 @@ function repoCardHTML(repo, index) {
 function renderReposGrid(repos) {
   const sorted = sortRepos(repos, currentSort);
   const grid = document.getElementById("repos-grid");
+  const loadBtn = document.getElementById("load-more-wrap");
   if (!grid) return;
 
   if (!sorted.length) {
@@ -60,10 +57,20 @@ function renderReposGrid(repos) {
         <i class="bi bi-folder2-open"></i>
         <p>Nenhum repositório público encontrado.</p>
       </div>`;
+    if (loadBtn) loadBtn.style.display = "none";
     return;
   }
 
-  grid.innerHTML = sorted.map((repo, i) => repoCardHTML(repo, i)).join("");
+  const visible = sorted.slice(0, visibleCount);
+  const hasMore = visibleCount < sorted.length;
+
+  grid.innerHTML = visible.map((repo, i) => repoCardHTML(repo, i)).join("");
+
+  if (loadBtn) {
+    loadBtn.style.display = hasMore ? "flex" : "none";
+    const btn = loadBtn.querySelector("#btn-load-more");
+    if (btn) btn.textContent = `Carregar mais`;
+  }
 
   grid.querySelectorAll(".repo-card").forEach((card) => {
     const goToRepo = () =>
@@ -118,7 +125,7 @@ function renderHeader(username) {
   return `
     <header class="site-header">
       <div class="logo" id="header-logo">
-        <i class="bi bi-github"></i> GitHub Explorer
+        <i class="bi bi-github"></i> Github Finder
       </div>
       <div class="header-search">
         <i class="bi bi-search"></i>
@@ -153,6 +160,7 @@ function bindHeaderSearch() {
 export async function renderUserPage({ params }) {
   const username = params.username;
   currentUser = username;
+  visibleCount = PAGE_SIZE;
 
   document.getElementById("view").innerHTML = `
     ${renderHeader(username)}
@@ -188,14 +196,17 @@ export async function renderUserPage({ params }) {
           <div class="sort-controls">
             <span>Ordenar por</span>
             <select class="sort-select" id="sort-select">
-              <option value="stars">⭐ Mais estrelas</option>
-              <option value="forks">🍴 Mais forks</option>
-              <option value="updated">🕐 Atualização recente</option>
-              <option value="name">🔤 Nome (A–Z)</option>
+              <option value="stars">Mais estrelas</option>
+              <option value="forks">Mais forks</option>
+              <option value="updated">Atualização recente</option>
+              <option value="name">Nome (A–Z)</option>
             </select>
           </div>
         </div>
         <div class="repos-grid" id="repos-grid"></div>
+        <div class="load-more-wrap" id="load-more-wrap" style="display:none">
+          <button class="btn-load-more" id="btn-load-more">Carregar</button>
+        </div>
       </section>
     `;
 
@@ -203,6 +214,12 @@ export async function renderUserPage({ params }) {
 
     document.getElementById("sort-select").addEventListener("change", (e) => {
       currentSort = e.target.value;
+      visibleCount = PAGE_SIZE;
+      renderReposGrid(currentRepos);
+    });
+
+    document.getElementById("load-more-wrap").addEventListener("click", () => {
+      visibleCount += PAGE_SIZE;
       renderReposGrid(currentRepos);
     });
   } catch (err) {
